@@ -201,6 +201,9 @@ public class Parser {
 
 		String architecture = "", os="", vmm="", name="";
 		double schedulingInterval= 0, timeZone=0, costPerSec=0, costPerMem=0, costPerStorage=0, costPerBw=0;
+		String storage_elasticity = ""; 
+		long storage_capacity = 0;
+		
 		for(AttributeState as : resource.getAttributes()) {
 			if(as.getName().contains("arch")) architecture = as.getValue();
 			else if(as.getName().equals("os")) os = as.getValue();
@@ -212,6 +215,8 @@ public class Parser {
 			else if(as.getName().equals("costPerBw")) costPerBw = Double.parseDouble(as.getValue());
 			else if(as.getName().equals("name")) name = as.getValue();
 			else if(as.getName().equals("schedulingInterval")) schedulingInterval = Double.parseDouble(as.getValue());
+			else if(as.getName().equals("storage_elasticity")) storage_elasticity = as.getValue();
+			else if(as.getName().equals("storage_capacity")) storage_capacity = Integer.parseInt(as.getValue());
 		}
 
 		//host linked to datacenter
@@ -224,7 +229,7 @@ public class Parser {
 		}
 		//create datacenter
 		return new Dc_Config(id, idTarget, name, architecture, os, vmm, timeZone, costPerSec, costPerMem, 
-				costPerStorage, costPerBw, schedulingInterval);
+				costPerStorage, costPerBw, schedulingInterval, storage_elasticity, storage_capacity);
 	}
 
 	/*********************************************************************************/
@@ -385,10 +390,12 @@ public class Parser {
 		String vmm, os, name, architecture;
 		double schedulingInterval;
 		double time_zone, costPerSec, costPerMem, costPerStorage, costPerBw;
+		String storage_elasticity;
+		long storage_capacity;
 
 		public Dc_Config(String id, List<String> targetId, String name,
 				String architecture, String os, String vmm, double time_zone, 
-				double costPerSec, double costPerMem, double costPerStorage, double costPerBw, double schedulingInterval){
+				double costPerSec, double costPerMem, double costPerStorage, double costPerBw, double schedulingInterval, String storage_elasticity, long storage_capacity){
 			this.architecture = architecture;
 			this.id = id;
 			this.targetId = targetId;
@@ -400,7 +407,9 @@ public class Parser {
 			this.costPerMem = costPerMem;
 			this.costPerStorage = costPerStorage;
 			this.costPerBw = costPerBw;
-			this.time_zone = time_zone;	
+			this.time_zone = time_zone;
+			this.storage_elasticity = storage_elasticity;
+			this.storage_capacity = storage_capacity;
 		}
 
 		@Override
