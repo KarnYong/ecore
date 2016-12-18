@@ -166,7 +166,7 @@ public class DesignServices {
 		if(msg==null){
 			System.out.println("Configuration contains correct informations");
 			Simulation simulation = new Simulation(entities);
-			simulation.runExtension();
+			simulation.runExtension(config);
 
 			JOptionPane.showMessageDialog(null, simulation.getResult(),
 					"Simulation Result",

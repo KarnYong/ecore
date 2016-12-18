@@ -1,7 +1,7 @@
 package org.occiware.clouddesigner.occi.simulation.cloudsim.handlers;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,8 +11,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.lang.reflect.Constructor;
-import java.text.DecimalFormat;
+
+import javax.swing.JOptionPane;
+
+import org.occiware.clouddesigner.occi.AttributeState;
+import org.occiware.clouddesigner.occi.Configuration;
+import org.occiware.clouddesigner.occi.Resource;
 import org.occiware.clouddesigner.occi.simulation.cloudsim.Cloudlet;
 import org.occiware.clouddesigner.occi.simulation.cloudsim.CloudletScheduler;
 import org.occiware.clouddesigner.occi.simulation.cloudsim.Datacenter;
@@ -23,6 +27,8 @@ import org.occiware.clouddesigner.occi.simulation.cloudsim.HarddriveStorage;
 import org.occiware.clouddesigner.occi.simulation.cloudsim.Host;
 import org.occiware.clouddesigner.occi.simulation.cloudsim.Log;
 import org.occiware.clouddesigner.occi.simulation.cloudsim.Pe;
+import org.occiware.clouddesigner.occi.simulation.cloudsim.Storage;
+import org.occiware.clouddesigner.occi.simulation.cloudsim.UtilizationModel;
 import org.occiware.clouddesigner.occi.simulation.cloudsim.Vm;
 import org.occiware.clouddesigner.occi.simulation.cloudsim.VmAllocationPolicyOcci;
 import org.occiware.clouddesigner.occi.simulation.cloudsim.VmScheduler;
@@ -34,13 +40,13 @@ import org.occiware.clouddesigner.occi.simulation.cloudsim.handlers.Parser.Entit
 import org.occiware.clouddesigner.occi.simulation.cloudsim.handlers.Parser.HarddriveStorage_Config;
 import org.occiware.clouddesigner.occi.simulation.cloudsim.handlers.Parser.Host_Config;
 import org.occiware.clouddesigner.occi.simulation.cloudsim.handlers.Parser.VM_Config;
+import org.occiware.clouddesigner.occi.simulation.cloudsim.handlers.monitor.DatacenterMonitor;
+import org.occiware.clouddesigner.occi.simulation.cloudsim.handlers.monitor.HostMonitor;
 import org.occiware.clouddesigner.occi.simulation.cloudsim.provisioners.BwProvisioner;
 import org.occiware.clouddesigner.occi.simulation.cloudsim.provisioners.BwProvisionerSimple;
 import org.occiware.clouddesigner.occi.simulation.cloudsim.provisioners.PeProvisioner;
 import org.occiware.clouddesigner.occi.simulation.cloudsim.provisioners.RamProvisioner;
 import org.occiware.clouddesigner.occi.simulation.cloudsim.provisioners.RamProvisionerSimple;
-import org.occiware.clouddesigner.occi.simulation.cloudsim.Storage;
-import org.occiware.clouddesigner.occi.simulation.cloudsim.UtilizationModel;
 
 public class Simulation {
 
@@ -63,7 +69,7 @@ public class Simulation {
 		carac.add("Cloudlet_ID,STATUS,Datacenter_ID,VM,Time,Start_Time,Finish_Time");
 	}
 
-	public void runExtension(){
+	public void runExtension(Configuration configuration){
 
 		//store the cloudletID for each VM. Map VmID to a set of cloudletID
 		Map<Integer, Set<Integer>> idVmToIdcloudLet = new HashMap<Integer, Set<Integer>>();
@@ -83,6 +89,69 @@ public class Simulation {
 		int nameBroker = 1, nbrDatacenter = this.getDcList().size();
 		List<DatacenterBroker> listBroker = new ArrayList<DatacenterBroker>();
 
+		// karn 
+		Iterator<Entity> it2 = entities.keySet().iterator();
+		
+		while(it2.hasNext()){
+			Object obj = it2.next();
+			if (obj instanceof Dc_Config) {
+
+				Datacenter dc = createDatacenter((Dc_Config)obj);				
+				List<Host> listHost = dc.getHostList();
+				
+				Dc_Config dc_obj = (Dc_Config)obj;					
+				DatacenterMonitor datacenterMonitor = new DatacenterMonitor(dc_obj.id, dc_obj.storage_elasticity, dc_obj.storage_capacity);
+				ArrayList<HostMonitor> listHostMonitor = new ArrayList<HostMonitor>();
+
+				for (Host host: listHost) {
+					listHostMonitor.add(new HostMonitor(String.valueOf(host.getId()), host.getStorage()));
+				}
+				datacenterMonitor.listHostMonitor = listHostMonitor;
+//				listDatacenterMonitor = new ArrayList<DatacenterMonitor>();
+//				listDatacenterMonitor.add(datacenterMonitor);
+				
+				String dataCenterID = datacenterMonitor.id;
+				String dataCenter_storage_elasticity = datacenterMonitor.storage_elasticity;
+				long dataCeneter_storage_capacity = datacenterMonitor.storage_capacity;
+				long totalHostStorage = 0;
+				for (HostMonitor host: listHostMonitor) {
+					totalHostStorage += host.storage;
+				}
+
+				if (dataCenter_storage_elasticity.equals("V") && totalHostStorage > dataCeneter_storage_capacity) {
+					boolean isFound = false;
+					for(Resource resource : configuration.getResources()) {
+						for(AttributeState as : resource.getAttributes()) {
+							if (as.getName().equals("occi.core.id") && as.getValue().equals(dataCenterID)) {
+								for(AttributeState as2 : resource.getAttributes()) {
+									if (as2.getName().contains("storage_capacity")) {
+										as2.setValue(String.valueOf(totalHostStorage));
+										dc_obj.storage_capacity = totalHostStorage;
+										isFound = true;
+										String text = "=== Previous configuration ===\n";
+										text += "DataCenter: " + dataCenterID + "\n";
+										text += "  " + "storage_elasticity: " + dataCenter_storage_elasticity + "\n";
+										text += "  " + "storage_capacity: " + dataCeneter_storage_capacity + "\n";
+										text += "Hosts: total storage: " + totalHostStorage + "\n\n";
+										text += "=== Current configuration ===\n";
+										text += "DataCenter: " + dataCenterID + "\n";
+										text += "  " + "storage_capacity: " + totalHostStorage + "\n";
+										
+										JOptionPane.showMessageDialog(null, text, "Alert", JOptionPane.INFORMATION_MESSAGE);
+										break;
+									}
+								}
+							}
+							if (isFound) break;
+						}
+						if (isFound) break;
+					}
+				}
+				
+				System.out.println("***" + datacenterMonitor);
+			}
+		}
+		
 		Iterator<Entity> it = entities.keySet().iterator();
 		while(it.hasNext()){
 			Object obj = it.next();

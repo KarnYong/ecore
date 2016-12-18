@@ -48,7 +48,7 @@ public class SampleHandler extends AbstractHandler {
 		if(msg == null){
 			System.out.println("Configuration contains correct informations");
 			Simulation simulation = new Simulation(entities);
-			simulation.runExtension();
+			simulation.runExtension(config);
 			
 		}else{
 			System.err.println("Thanks to verify your linked resources in configuration");
