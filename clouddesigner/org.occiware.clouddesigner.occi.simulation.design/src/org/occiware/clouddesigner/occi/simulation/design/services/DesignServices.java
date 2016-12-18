@@ -46,6 +46,7 @@ import org.occiware.clouddesigner.occi.OCCIRegistry;
 import org.occiware.clouddesigner.occi.Resource;
 import org.occiware.clouddesigner.occi.design.dialog.LoadExtensionDialog;
 import org.occiware.clouddesigner.occi.simulation.cloudsim.handlers.BrigeConfigSimulation;
+import org.occiware.clouddesigner.occi.simulation.cloudsim.handlers.MultipleSimulation;
 import org.occiware.clouddesigner.occi.simulation.cloudsim.handlers.Parser.Entity;
 import org.occiware.clouddesigner.occi.util.OcciHelper;
 import org.occiware.clouddesigner.occi.simulation.cloudsim.handlers.Simulation;
@@ -165,13 +166,15 @@ public class DesignServices {
 		System.out.println("msg: "+msg);
 		if(msg==null){
 			System.out.println("Configuration contains correct informations");
-			Simulation simulation = new Simulation(entities);
-			simulation.runExtension(config);
-
-			JOptionPane.showMessageDialog(null, simulation.getResult(),
-					"Simulation Result",
-					JOptionPane.INFORMATION_MESSAGE);
-			return;
+//			Simulation simulation = new Simulation(entities);
+//			simulation.runExtension(config);
+//
+//			JOptionPane.showMessageDialog(null, simulation.getResult(),
+//					"Simulation Result",
+//					JOptionPane.INFORMATION_MESSAGE);
+//			return;
+			MultipleSimulation multiSim = new MultipleSimulation(entities);
+			multiSim.runExtensions(config);
 
 		}else{
 			System.err.println("Thanks to verify your linked resources in configuration");
