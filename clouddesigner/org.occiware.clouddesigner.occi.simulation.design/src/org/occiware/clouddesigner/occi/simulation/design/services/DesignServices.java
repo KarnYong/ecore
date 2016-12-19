@@ -166,13 +166,32 @@ public class DesignServices {
 		System.out.println("msg: "+msg);
 		if(msg==null){
 			System.out.println("Configuration contains correct informations");
-//			Simulation simulation = new Simulation(entities);
-//			simulation.runExtension(config);
-//
-//			JOptionPane.showMessageDialog(null, simulation.getResult(),
-//					"Simulation Result",
-//					JOptionPane.INFORMATION_MESSAGE);
-//			return;
+			Simulation simulation = new Simulation(entities);
+			simulation.runExtension(config);
+
+			JOptionPane.showMessageDialog(null, simulation.getResult(),
+					"Simulation Result",
+					JOptionPane.INFORMATION_MESSAGE);
+			return;
+
+		}else{
+			System.err.println("Thanks to verify your linked resources in configuration");
+			MessageDialog.openInformation(shell, "Info", "Thanks to verify your linked resources in configuration \n"
+					+ msg);
+		}
+
+
+	}
+
+	public void multiplestart(Configuration config) {
+		System.out.println("start simulation ... ");
+		//print(conf);
+		BrigeConfigSimulation bridge = new BrigeConfigSimulation(config); 
+		Map<Entity, Set<Entity>> entities= bridge.ExtaractEntities();
+		Shell shell = this.getShell();
+		String msg = bridge.checkEntities();
+		System.out.println("msg: "+msg);
+		if(msg==null){
 			MultipleSimulation multiSim = new MultipleSimulation(entities);
 			multiSim.runExtensions(config);
 

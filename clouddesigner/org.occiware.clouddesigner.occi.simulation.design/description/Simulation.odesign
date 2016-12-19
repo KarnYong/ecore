@@ -166,6 +166,16 @@
             </menuItemDescription>
           </ownedTools>
         </toolSections>
+        <toolSections name="MultipleExecution">
+          <ownedTools xsi:type="tool:PopupMenu" name="Multiple Execute">
+            <menuItemDescription xsi:type="tool:OperationAction" name="Start">
+              <view name="views"/>
+              <initialOperation>
+                <firstModelOperations xsi:type="tool:ChangeContext" browseExpression="service:multiplestart"/>
+              </initialOperation>
+            </menuItemDescription>
+          </ownedTools>
+        </toolSections>
         <toolSections name="Attribute">
           <ownedTools xsi:type="tool_1:NodeCreationDescription" name="Attribute" nodeMappings="//@ownedViewpoints[name='Simulation%20Configuration']/@ownedRepresentations[name='Simulation%20Configuration']/@defaultLayer/@containerMappings[name='ResourceContainer']/@subNodeMappings[name='AttributeState']">
             <variable name="container"/>

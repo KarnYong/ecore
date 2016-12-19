@@ -7,7 +7,9 @@ import java.util.Set;
 
 import javax.swing.JOptionPane;
 
+import org.occiware.clouddesigner.occi.AttributeState;
 import org.occiware.clouddesigner.occi.Configuration;
+import org.occiware.clouddesigner.occi.Resource;
 import org.occiware.clouddesigner.occi.simulation.cloudsim.handlers.Parser.Entity;
 import org.occiware.clouddesigner.occi.simulation.cloudsim.handlers.Parser.Host_Config;
 import org.occiware.clouddesigner.occi.simulation.cloudsim.handlers.Parser.VM_Config;;

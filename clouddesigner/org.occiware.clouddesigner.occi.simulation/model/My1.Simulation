@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="ASCII"?>
+<occi:Configuration xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:occi="http://schemas.ogf.org/occi/core/ecore">
+  <use href="../../../plugin/org.occiware.clouddesigner.occi/model/Core.occie#/"/>
+  <use href="http://occiware.org/simulation#/"/>
+  <resources id="3cc1575a-f738-483a-9b74-bf1a63c5e71f">
+    <kind href="../../../plugin/org.occiware.clouddesigner.occi/model/Core.occie#//@kinds[term='resource']"/>
+    <mixins href="http://occiware.org/simulation#//@mixins[term='datacenter']"/>
+    <attributes name="occi.core.id" value="3cc1575a-f738-483a-9b74-bf1a63c5e71f"/>
+    <attributes name="os" value="Linux"/>
+    <attributes name="vmm" value="Xen"/>
+    <attributes name="time_zone" value="10.0"/>
+    <attributes name="cost" value="3.0"/>
+    <attributes name="costPerMem" value="0.05"/>
+    <attributes name="costPerStorage" value="0.001"/>
+    <attributes name="costPerBw" value="0.0"/>
+    <attributes name="name" value="datacenter_"/>
+    <attributes name="schedulingInterval" value="0"/>
+    <attributes name="architecture" value="x86"/>
+    <attributes name="storage_elasticity" value="V"/>
+    <attributes name="storage_capacity" value="15000"/>
+    <links id="0571cf58-2436-41eb-883d-d77712cd84dc" target="//@resources.1">
+      <kind href="../../../plugin/org.occiware.clouddesigner.occi/model/Core.occie#//@kinds[term='link']"/>
+      <attributes name="occi.core.id" value="0571cf58-2436-41eb-883d-d77712cd84dc"/>
+    </links>
+    <links id="785aae27-3fcf-4f56-a06d-cdfb0906f65b" target="//@resources.4">
+      <kind href="../../../plugin/org.occiware.clouddesigner.occi/model/Core.occie#//@kinds[term='link']"/>
+      <attributes name="occi.core.id" value="785aae27-3fcf-4f56-a06d-cdfb0906f65b"/>
+    </links>
+  </resources>
+  <resources id="f65f8151-dcfd-4eb8-bb76-3ca26b1e94e4">
+    <kind href="../../../plugin/org.occiware.clouddesigner.occi/model/Core.occie#//@kinds[term='resource']"/>
+    <mixins href="http://occiware.org/simulation#//@mixins[term='host']"/>
+    <attributes name="occi.core.id" value="f65f8151-dcfd-4eb8-bb76-3ca26b1e94e4"/>
+    <attributes name="id_host" value="0"/>
+    <attributes name="ramProvisioner" value="RamProvisionerSimple"/>
+    <attributes name="bwProvisioner" value="BwProvisionerSimple"/>
+    <attributes name="storage" value="10000"/>
+    <attributes name="cores" value="1"/>
+    <attributes name="vmScheduler" value="VmSchedulerTimeShared"/>
+    <attributes name="ram" value="2048"/>
+    <attributes name="bw" value="10000"/>
+    <attributes name="mips" value="1"/>
+    <attributes name="peProvisioner" value="PeProvisionerSimple"/>
+    <links id="5c91c22b-b832-4704-9faa-065b2c2ac43c" target="//@resources.2">
+      <kind href="../../../plugin/org.occiware.clouddesigner.occi/model/Core.occie#//@kinds[term='link']"/>
+      <attributes name="occi.core.id" value="5c91c22b-b832-4704-9faa-065b2c2ac43c"/>
+    </links>
+  </resources>
+  <resources id="ed48f9ae-5c28-458e-902e-843977333952">
+    <kind href="../../../plugin/org.occiware.clouddesigner.occi/model/Core.occie#//@kinds[term='resource']"/>
+    <mixins href="http://occiware.org/simulation#//@mixins[term='VM']"/>
+    <attributes name="occi.core.id" value="ed48f9ae-5c28-458e-902e-843977333952"/>
+    <attributes name="id_vm" value="0"/>
+    <attributes name="mips" value="1"/>
+    <attributes name="cores" value="1"/>
+    <attributes name="bw" value="1000"/>
+    <attributes name="size" value="10000"/>
+    <attributes name="cloudletScheduler" value="CloudletSchedulerTimeShared"/>
+    <attributes name="userId" value="1"/>
+    <attributes name="vmm" value="Xen"/>
+    <attributes name="ram" value="512"/>
+    <attributes name="ram_max_vm" value="1024"/>
+    <links id="2bb0f5a2-8a91-4d70-87e9-bd5ef6780c31" target="//@resources.3">
+      <kind href="../../../plugin/org.occiware.clouddesigner.occi/model/Core.occie#//@kinds[term='link']"/>
+      <attributes name="occi.core.id" value="2bb0f5a2-8a91-4d70-87e9-bd5ef6780c31"/>
+    </links>
+  </resources>
+  <resources id="05754804-4c07-41dd-8e07-64c3efb0d058">
+    <kind href="../../../plugin/org.occiware.clouddesigner.occi/model/Core.occie#//@kinds[term='resource']"/>
+    <mixins href="http://occiware.org/simulation#//@mixins[term='cloudlet']"/>
+    <attributes name="occi.core.id" value="05754804-4c07-41dd-8e07-64c3efb0d058"/>
+    <attributes name="cloudletId" value="0"/>
+    <attributes name="cloudletLength" value="400000"/>
+    <attributes name="cores" value="1"/>
+    <attributes name="cloudletFileSize" value="300"/>
+    <attributes name="cloudletOutputSize" value="300"/>
+    <attributes name="utilizationModelCpu" value="UtilizationModelFull"/>
+    <attributes name="utilizationModelRam" value="UtilizationModelFull"/>
+    <attributes name="utilizationModelBw" value="UtilizationModelFull"/>
+  </resources>
+  <resources id="98ef28ef-65cb-4bca-ab96-541d37924ab9">
+    <kind href="../../../plugin/org.occiware.clouddesigner.occi/model/Core.occie#//@kinds[term='resource']"/>
+    <mixins href="http://occiware.org/simulation#//@mixins[term='host']"/>
+    <attributes name="occi.core.id" value="98ef28ef-65cb-4bca-ab96-541d37924ab9"/>
+    <attributes name="id_host" value="1"/>
+    <attributes name="ramProvisioner" value="RamProvisionerSimple"/>
+    <attributes name="bwProvisioner" value="BwProvisionerSimple"/>
+    <attributes name="storage" value="10000"/>
+    <attributes name="cores" value="1"/>
+    <attributes name="vmScheduler" value="VmSchedulerTimeShared"/>
+    <attributes name="ram" value="2048"/>
+    <attributes name="bw" value="10000"/>
+    <attributes name="mips" value="1"/>
+    <attributes name="peProvisioner" value="PeProvisionerSimple"/>
+    <links id="5d161ee5-1f87-4c19-a36a-cc30ec0a24f4" target="//@resources.5">
+      <kind href="../../../plugin/org.occiware.clouddesigner.occi/model/Core.occie#//@kinds[term='link']"/>
+      <attributes name="occi.core.id" value="5d161ee5-1f87-4c19-a36a-cc30ec0a24f4"/>
+    </links>
+    <links id="3f5ea759-5220-4f2e-a2ef-20beed88dfb5" target="//@resources.7">
+      <kind href="../../../plugin/org.occiware.clouddesigner.occi/model/Core.occie#//@kinds[term='link']"/>
+      <attributes name="occi.core.id" value="3f5ea759-5220-4f2e-a2ef-20beed88dfb5"/>
+    </links>
+  </resources>
+  <resources id="b1194b5c-8c20-4aeb-b627-af1d73c7a159">
+    <kind href="../../../plugin/org.occiware.clouddesigner.occi/model/Core.occie#//@kinds[term='resource']"/>
+    <mixins href="http://occiware.org/simulation#//@mixins[term='VM']"/>
+    <attributes name="occi.core.id" value="b1194b5c-8c20-4aeb-b627-af1d73c7a159"/>
+    <attributes name="id_vm" value="1"/>
+    <attributes name="mips" value="1"/>
+    <attributes name="cores" value="1"/>
+    <attributes name="bw" value="1000"/>
+    <attributes name="size" value="10000"/>
+    <attributes name="cloudletScheduler" value="CloudletSchedulerTimeShared"/>
+    <attributes name="userId" value="1"/>
+    <attributes name="vmm" value="Xen"/>
+    <attributes name="ram" value="512"/>
+    <attributes name="ram_max_vm" value="1024"/>
+    <links id="affd8544-9c71-45bc-98a9-6e29c790baa0" target="//@resources.6">
+      <kind href="../../../plugin/org.occiware.clouddesigner.occi/model/Core.occie#//@kinds[term='link']"/>
+      <attributes name="occi.core.id" value="affd8544-9c71-45bc-98a9-6e29c790baa0"/>
+    </links>
+  </resources>
+  <resources id="39f3b0ec-411b-4286-b0c2-54d7603591dd">
+    <kind href="../../../plugin/org.occiware.clouddesigner.occi/model/Core.occie#//@kinds[term='resource']"/>
+    <mixins href="http://occiware.org/simulation#//@mixins[term='cloudlet']"/>
+    <attributes name="occi.core.id" value="39f3b0ec-411b-4286-b0c2-54d7603591dd"/>
+    <attributes name="cloudletId" value="1"/>
+    <attributes name="cloudletLength" value="400000"/>
+    <attributes name="cores" value="1"/>
+    <attributes name="cloudletFileSize" value="300"/>
+    <attributes name="cloudletOutputSize" value="300"/>
+    <attributes name="utilizationModelCpu" value="UtilizationModelFull"/>
+    <attributes name="utilizationModelRam" value="UtilizationModelFull"/>
+    <attributes name="utilizationModelBw" value="UtilizationModelFull"/>
+  </resources>
+  <resources id="d96944fd-aff5-40c9-9249-6276197f4ba9">
+    <kind href="../../../plugin/org.occiware.clouddesigner.occi/model/Core.occie#//@kinds[term='resource']"/>
+    <mixins href="http://occiware.org/simulation#//@mixins[term='VM']"/>
+    <attributes name="occi.core.id" value="d96944fd-aff5-40c9-9249-6276197f4ba9"/>
+    <attributes name="id_vm" value="2"/>
+    <attributes name="mips" value="1"/>
+    <attributes name="cores" value="1"/>
+    <attributes name="bw" value="1000"/>
+    <attributes name="size" value="10000"/>
+    <attributes name="cloudletScheduler" value="CloudletSchedulerTimeShared"/>
+    <attributes name="userId" value="1"/>
+    <attributes name="vmm" value="Xen"/>
+    <attributes name="ram" value="512"/>
+    <attributes name="ram_max_vm" value="1024"/>
+    <links id="7da9e718-d402-45fe-8867-1d0b75832e0b" target="//@resources.8">
+      <kind href="../../../plugin/org.occiware.clouddesigner.occi/model/Core.occie#//@kinds[term='link']"/>
+      <attributes name="occi.core.id" value="7da9e718-d402-45fe-8867-1d0b75832e0b"/>
+    </links>
+  </resources>
+  <resources id="1b1ba3aa-a893-4f2e-bf8f-35527f2bdf26">
+    <kind href="../../../plugin/org.occiware.clouddesigner.occi/model/Core.occie#//@kinds[term='resource']"/>
+    <mixins href="http://occiware.org/simulation#//@mixins[term='cloudlet']"/>
+    <attributes name="occi.core.id" value="1b1ba3aa-a893-4f2e-bf8f-35527f2bdf26"/>
+    <attributes name="cloudletId" value="2"/>
+    <attributes name="cloudletLength" value="400000"/>
+    <attributes name="cores" value="1"/>
+    <attributes name="cloudletFileSize" value="300"/>
+    <attributes name="cloudletOutputSize" value="300"/>
+    <attributes name="utilizationModelCpu" value="UtilizationModelFull"/>
+    <attributes name="utilizationModelRam" value="UtilizationModelFull"/>
+    <attributes name="utilizationModelBw" value="UtilizationModelFull"/>
+  </resources>
+</occi:Configuration>
