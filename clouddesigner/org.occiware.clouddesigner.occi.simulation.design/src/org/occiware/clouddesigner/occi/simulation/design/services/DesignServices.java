@@ -169,8 +169,8 @@ public class DesignServices {
 			Simulation simulation = new Simulation(entities);
 			simulation.runExtension(config);
 
-			JOptionPane.showMessageDialog(null, simulation.getResult(),
-					"Simulation Result",
+			JOptionPane.showMessageDialog(null, "The Simulation results (excel file) are at " + System.getProperty("user.dir"),
+					"Simulation Results",
 					JOptionPane.INFORMATION_MESSAGE);
 			return;
 

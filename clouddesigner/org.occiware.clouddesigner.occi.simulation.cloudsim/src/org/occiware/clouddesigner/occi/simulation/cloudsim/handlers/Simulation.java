@@ -1,5 +1,7 @@
 package org.occiware.clouddesigner.occi.simulation.cloudsim.handlers;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -48,6 +50,14 @@ import org.occiware.clouddesigner.occi.simulation.cloudsim.provisioners.PeProvis
 import org.occiware.clouddesigner.occi.simulation.cloudsim.provisioners.RamProvisioner;
 import org.occiware.clouddesigner.occi.simulation.cloudsim.provisioners.RamProvisionerSimple;
 
+import jxl.Workbook;
+import jxl.write.Label;
+import jxl.write.Number;
+import jxl.write.WritableSheet;
+import jxl.write.WritableWorkbook;
+import jxl.write.WriteException;
+import jxl.write.biff.RowsExceededException;
+
 public class Simulation {
 
 	public static List<Cloudlet> cloudletList;
@@ -85,10 +95,11 @@ public class Simulation {
 
 		cloudletList = null;
 		vmlist = null;
-		int vmid = 0, cloudLetId = 0;
+//		int vmid = 0, cloudLetId = 0;
 		int nameBroker = 1, nbrDatacenter = this.getDcList().size();
 		List<DatacenterBroker> listBroker = new ArrayList<DatacenterBroker>();
 
+		/*
 		// karn 
 		Iterator<Entity> it2 = entities.keySet().iterator();
 		
@@ -151,6 +162,7 @@ public class Simulation {
 				System.out.println("***" + datacenterMonitor);
 			}
 		}
+		*/
 		
 		Iterator<Entity> it = entities.keySet().iterator();
 		while(it.hasNext()){
@@ -179,18 +191,18 @@ public class Simulation {
 					Set<Entity> vmLinkedToHost = entities.get(host_config);
 					Iterator<Entity> itVM = vmLinkedToHost.iterator();
 					while (itVM.hasNext()) {
-						Entity isVm = itVM.next();
-						createVm((VM_Config)isVm, brokerId, host,vmid);
-						idVmToIdcloudLet.put(vmid, new HashSet<Integer>());
-						Set<Entity> cloudletLinkedToVm = entities.get(isVm);
+						VM_Config vm = (VM_Config)itVM.next();
+						createVm(vm, brokerId, host, vm.id_vm);
+						idVmToIdcloudLet.put(vm.id_vm, new HashSet<Integer>());
+						Set<Entity> cloudletLinkedToVm = entities.get(vm);
 						Iterator<Entity> itCloudlet = cloudletLinkedToVm.iterator();
 						while (itCloudlet.hasNext()) {
-							Entity isCloudLet = itCloudlet.next();
-							createCloudLet((Cloudlet_Config)isCloudLet, brokerId, cloudLetId);
-							idVmToIdcloudLet.get(vmid).add(cloudLetId);
-							cloudLetId++;
+							Cloudlet_Config cloudLet = (Cloudlet_Config)itCloudlet.next();
+							createCloudLet(cloudLet, brokerId, cloudLet.cloudletId);
+							idVmToIdcloudLet.get(vm.id_vm).add(cloudLet.cloudletId);
+//							cloudLetId++;
 						}
-						vmid++;
+//						vmid++;
 					}
 				}
 				nbrDatacenter--;
@@ -238,10 +250,11 @@ public class Simulation {
 				Log.printLine(bwsimple.getBwConsumed());
 				Log.printLine(pesimple.getMipsConsumed());
 				Log.printLine(host.getStorageConsumed());
+
 				for(Vm vm_: vmToHost.keySet()){
 					int vmId = vm_.getId();
 					ArrayList<String> l = new ArrayList<String>();
-					if(vmId == host.getId()){
+					if(vmToHost.get(vm_).getId() == host.getId()){
 						l.add(""+ramProv.getramConsumed().get(vmId)*datacenter.getCharacteristics().getCostPerMem());
 						Log.printLine("vmId: "+vmId+", RamPrice: "+ramProv.getramConsumed().get(vmId)*datacenter.getCharacteristics().getCostPerMem());
 						l.add(""+bwsimple.getBwConsumed().get(vmId)*datacenter.getCharacteristics().getCostPerBw());
@@ -261,48 +274,124 @@ public class Simulation {
 		}
 		/*************/
 
+		getResult();
 		Log.printLine("Simulation finished!");
 	}
 
 	public String getResult(){
+
+
 		String result ="";
-		for(String line: carac){
-			String[] res = line.split(",");
-			for(int i=0; i<res.length; i++){
-				result =result+ "\t \t \t \t |" +res[i];
-			}
-			result+="\n";
-		}
-		for(String line: att){
-			String[] res = line.split(",");
-			for(int i=0; i<res.length; i++){
-				if(i==0)
-					result =result+ "\t \t \t \t \t \t \t \t \t \t  \t" +res[i];
-				if(i==1)
-					result =result+ "\t \t \t \t \t \t \t \t \t \t \t \t \t \t \t  \t" +res[i];
-				if(i==2)
-					result =result+ "\t \t \t \t \t \t \t \t \t \t" +res[i];
-				if(i==3)
-					result =result+ "\t \t \t \t \t \t \t \t \t \t \t \t \t \t \t \t \t \t \t \t  \t \t  \t" +res[i];
-				if(i==4)
-					result =result+ "\t \t \t \t \t \t \t \t " +res[i];
-				if(i==5)
-					result =result+ "\t \t \t \t \t \t \t \t " +res[i];
-				if(i==6)
-					result =result+ "\t \t \t \t \t \t \t \t \t \t \t \t \t \t" +res[i];
-			}
-			result+="\n";
-		}
-		for(String vmId: rsrc.keySet()){
-			for(Vm vm: vmlist){
-				if(vmId.equals(Integer.toString(vm.getId()))){
-					double m = (Double.parseDouble(rsrc.get(vmId).get(2))/vm.getMips())*100;
-					result+="VM: "+vmId+", % AvgCpu: "+m+"\n";
+		//karn
+		
+		WritableWorkbook workbook = null;
+		try {
+			
+			/* On créé un nouveau worbook et on l'ouvre en écriture */
+			workbook = Workbook.createWorkbook(new File("results.xls"));
+			
+			/* On créé une nouvelle feuille (test en position 0) et on l'ouvre en écriture */
+			WritableSheet sheet = workbook.createSheet("result", 0); 
+			
+//			sheet.addCell(new Label(0, 0, "Cloudlet_ID"));
+//			sheet.addCell(new Label(1, 0, "STATUS"));
+//			sheet.addCell(new Label(2, 0, "Datacenter_ID"));
+//			sheet.addCell(new Label(3, 0, "VM"));
+//			sheet.addCell(new Label(4, 0, "Time"));
+//			sheet.addCell(new Label(5, 0, "Start_Time"));
+//			sheet.addCell(new Label(6, 0, "Finish_Time"));
+			
+			int rowNum = 0;
+			for(String line: carac){
+				String[] res = line.split(",");
+				for(int i=0; i<res.length; i++){
+					result =result+ "\t \t \t \t |" +res[i];
+					sheet.addCell(new Label(i, rowNum, res[i]));
 				}
-				result+="VM: "+vmId+", RamPrice: "+rsrc.get(vmId).get(0)+"\n";
-				result+="VM: "+vmId+", BwPrice: "+rsrc.get(vmId).get(1)+"\n";
-				result+="VM: "+vmId+", MipsPrice: "+rsrc.get(vmId).get(2)+"\n";
-				result+="VM: "+vmId+", StoragePrice: "+rsrc.get(vmId).get(3)+"\n";
+				++rowNum;
+				result+="\n";
+			}
+			for(String line: att){
+				String[] res = line.split(",");
+				for(int i=0; i<res.length; i++){
+					sheet.addCell(new Label(i, rowNum, res[i]));
+					
+					if(i==0)
+						result =result+ "\t \t \t \t \t \t \t \t \t \t  \t" +res[i];
+					if(i==1)
+						result =result+ "\t \t \t \t \t \t \t \t \t \t \t \t \t \t \t  \t" +res[i];
+					if(i==2)
+						result =result+ "\t \t \t \t \t \t \t \t \t \t" +res[i];
+					if(i==3)
+						result =result+ "\t \t \t \t \t \t \t \t \t \t \t \t \t \t \t \t \t \t \t \t  \t \t  \t" +res[i];
+					if(i==4)
+						result =result+ "\t \t \t \t \t \t \t \t " +res[i];
+					if(i==5)
+						result =result+ "\t \t \t \t \t \t \t \t " +res[i];
+					if(i==6)
+						result =result+ "\t \t \t \t \t \t \t \t \t \t \t \t \t \t" +res[i];
+				}
+				result+="\n";
+				++rowNum;
+			}
+
+			++rowNum;
+			sheet.addCell(new Label(0, rowNum, "vmId"));
+			sheet.addCell(new Label(1, rowNum, "RamPrice"));
+			sheet.addCell(new Label(2, rowNum, "BwPrice"));
+			sheet.addCell(new Label(3, rowNum, "MipsPrice"));
+			sheet.addCell(new Label(4, rowNum, "StoragePrice"));
+			++rowNum;
+			
+//			for(String vmId: rsrc.keySet()){
+				for(Vm vm: vmlist){
+					String vmId = String.valueOf(vm.getId());
+					if(vmId.equals(Integer.toString(vm.getId()))){
+						double m = (Double.parseDouble(rsrc.get(vmId).get(2))/vm.getMips())*100;
+						result+="VM: "+vmId+", % AvgCpu: "+m+"\n";
+					}
+
+					/* Creation d'un champ au format numerique */
+					sheet.addCell(new Label(0, rowNum, vmId)); 
+					sheet.addCell(new Number(1, rowNum, Double.parseDouble(rsrc.get(vmId).get(0)))); 
+					sheet.addCell(new Number(2, rowNum, Double.parseDouble(rsrc.get(vmId).get(1)))); 
+					sheet.addCell(new Number(3, rowNum, Double.parseDouble(rsrc.get(vmId).get(2)))); 
+					sheet.addCell(new Number(4, rowNum, Double.parseDouble(rsrc.get(vmId).get(3)))); 
+					
+					result+="VM: "+vmId+", RamPrice: "+rsrc.get(vmId).get(0)+"\n";
+					result+="VM: "+vmId+", BwPrice: "+rsrc.get(vmId).get(1)+"\n";
+					result+="VM: "+vmId+", MipsPrice: "+rsrc.get(vmId).get(2)+"\n";
+					result+="VM: "+vmId+", StoragePrice: "+rsrc.get(vmId).get(3)+"\n";
+					
+					++rowNum;
+				}
+//			}
+			
+			/* On ecrit le classeur */
+			workbook.write(); 
+			
+		} 
+		catch (IOException e) {
+			e.printStackTrace();
+		} 
+		catch (RowsExceededException e) {
+			e.printStackTrace();
+		}
+		catch (WriteException e) {
+			e.printStackTrace();
+		}
+		finally {
+			if(workbook!=null){
+				/* On ferme le worbook pour libérer la mémoire */
+				try {
+					workbook.close();
+				} 
+				catch (WriteException e) {
+					e.printStackTrace();
+				} 
+				catch (IOException e) {
+					e.printStackTrace();
+				} 
 			}
 		}
 		return result;
